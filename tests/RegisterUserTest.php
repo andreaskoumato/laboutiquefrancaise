@@ -15,5 +15,3 @@ class RegisterUserTest extends WebTestCase
         $this->assertSelectorTextContains('h1', 'Hello World');
     }
 }
-
-
