@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\CarrierRepository;
+use App\Twig\AppExtensions;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -22,6 +23,12 @@ class Carrier
 
     #[ORM\Column]
     private ?float $price = null;
+
+    public function __toString() {
+
+        $price = number_format($this->getPrice(), '2', ',') . ' €' ; 
+        return $this->getName() . '<br />' . $price . '<br />' . $this->getDescription()  ;
+    }
 
     public function getId(): ?int
     {
