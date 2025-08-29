@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Classe\Mail;
 use App\Entity\User;
 use App\Form\RegisterUserType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,8 +34,12 @@ final class RegisterController extends AbstractController
             return $this->redirectToRoute("app_login");
         }
 
-
-
+        $mail = new Mail();
+        $vars = [
+            'firstname' => $user->getFirstname()
+        ];
+        $mail->send($user->getEmail(), $user->getFirstName() . " " . $user->getLastname(), "Bienvenue sur la Boutique Française", 'welcome.html', $vars);
+        
         return $this->render('register/index.html.twig', [
             'registerForm'=> $form->createView(),
         ]

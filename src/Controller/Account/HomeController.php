@@ -15,11 +15,13 @@ final class HomeController extends AbstractController
     {
         $orders = $repo->findBy([
             'user' => $this->getUser(),
+            'state' => [ 2, 3]
         ]);
 
-        dd($orders);
 
-        return $this->render('account/index.html.twig');
+        return $this->render('account/index.html.twig', [
+            'orders'=> $orders
+        ]);
     }
 
 }
