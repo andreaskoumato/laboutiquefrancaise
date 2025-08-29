@@ -3,9 +3,11 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Order;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
@@ -30,11 +32,22 @@ class OrderCrudController extends AbstractCrudController
     
     public function configureActions(Actions $actions): Actions
     {
+        $show = Action::new('Afficher')->linkToCrudAction('show');
         return $actions
+                ->add(Crud::PAGE_INDEX, $show)
                 ->remove(Crud::PAGE_INDEX, Action::NEW)
                 ->remove(Crud::PAGE_INDEX, Action::DELETE)
                 ->remove(Crud::PAGE_INDEX, Action::EDIT);
 
+    }
+
+    public function show(AdminContext $context, EntityManagerInterface $em) {
+        $id = $_GET['entityId'] ?? null;
+        $order = $em->getRepository(Order::class)->find($id);
+        
+        return $this->render('admin/order.html.twig', [
+            'order'=> $order,
+        ]);
     }
 
     public function configureFields(string $pageName): iterable

@@ -46,9 +46,41 @@ class Order
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $stripe_session_id = null;
+
     public function __construct()
     {
         $this->orderDetails = new ArrayCollection();
+    }
+
+    public function getTotalWt() {
+
+        $totalTTC = 0 ;
+
+        $products = $this->getOrderDetails();
+
+        foreach ($products as $product) {
+            $coef = 1 + ($product->getProductTva() / 100) ;
+
+            $totalTTC += ($product->getProductPrice() * $coef) * $product->getProductQuantity();
+        }
+
+        return $totalTTC + $this->getCarrierPrice();
+    }
+
+    public function getTotalTva() {
+    
+        $totalTva = 0;
+        $products = $this->getOrderDetails();
+
+        foreach ($products as $product) {
+            $coef = $product->getProductTva() / 100 ;
+
+            $totalTva += $product->getProductPrice() * $coef;
+        }
+
+        return $totalTva ;
     }
 
     public function getId(): ?int
@@ -154,6 +186,18 @@ class Order
     public function setUser(?User $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getStripeSessionId(): ?string
+    {
+        return $this->stripe_session_id;
+    }
+
+    public function setStripeSessionId(?string $stripe_session_id): static
+    {
+        $this->stripe_session_id = $stripe_session_id;
 
         return $this;
     }
